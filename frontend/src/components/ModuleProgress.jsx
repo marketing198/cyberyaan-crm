@@ -8,9 +8,12 @@ export default function ModuleProgress({
         Module Progress
       </h2>
 
-      <div className="space-y-5">
+      <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2">
 
-        {students.map((student) => {
+        {students.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">No active modules</p>
+        ) : (
+          students.map((student) => {
 
           const totalModules =
             student.completedModules +
@@ -24,7 +27,7 @@ export default function ModuleProgress({
               : 0;
 
           return (
-            <div key={student.id}>
+            <div key={student._id || Math.random()} className="mb-2">
 
               <div className="flex justify-between mb-1">
 
@@ -65,7 +68,7 @@ export default function ModuleProgress({
 
             </div>
           );
-        })}
+        }))}
 
       </div>
 

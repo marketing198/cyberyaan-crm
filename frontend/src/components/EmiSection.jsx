@@ -6,30 +6,59 @@ export default function EmiSection({ students }) {
         Upcoming EMI Dates
       </h2>
 
-      <div className="space-y-4">
+      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
 
-        {students.map((student) => {
+        {students.filter(student => (student.totalFees || 0) - (student.paid || 0) > 0).length === 0 ? (
+          <p className="text-gray-500 text-center py-8">No pending EMIs</p>
+        ) : (
+          students
+            .filter(student => (student.totalFees || 0) - (student.paid || 0) > 0)
+            .map((student) => {
 
-          const pendingAmount =
-            student.totalFees - student.paid;
+            const pendingAmount = student.totalFees - student.paid;
 
-          return (
-            <div
-              key={student.id}
-              className="border rounded-xl p-4 flex justify-between items-center"
-            >
+            let nextEmiStr = "Not Set";
+            if (student.emiDate) {
+              const emiDate = new Date(student.emiDate);
+              if (!isNaN(emiDate.getTime())) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+                
+                // Calculate next EMI date using current month and original day
+                const nextEmi = new Date(today.getFullYear(), today.getMonth(), emiDate.getDate());
+                
+                // If that date has already passed this month, move it to next month
+                if (nextEmi < today) {
+                  nextEmi.setMonth(nextEmi.getMonth() + 1);
+                }
+                
+                nextEmiStr = nextEmi.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric"
+                });
+              } else {
+                nextEmiStr = student.emiDate;
+              }
+            }
 
-              <div>
+            return (
+              <div
+                key={student._id || Math.random()}
+                className="border rounded-xl p-4 flex justify-between items-center bg-gray-50"
+              >
 
-                <p className="font-semibold">
-                  {student.name}
-                </p>
+                <div>
 
-                <p className="text-sm text-gray-500">
-                  EMI Date: {student.emiDate}
-                </p>
+                  <p className="font-semibold text-gray-900">
+                    {student.name}
+                  </p>
 
-              </div>
+                  <p className="text-sm font-bold text-red-500 mt-1">
+                    Next Due: {nextEmiStr}
+                  </p>
+
+                </div>
 
               <div className="text-right">
 
@@ -44,8 +73,9 @@ export default function EmiSection({ students }) {
               </div>
 
             </div>
-          );
-        })}
+            );
+          })
+        )}
 
       </div>
 

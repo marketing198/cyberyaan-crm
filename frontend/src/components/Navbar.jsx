@@ -30,11 +30,11 @@ export default function Navbar() {
           Cyberyaan CRM
         </h1>
 
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 font-medium mt-1">
 
-          Welcome back,
+          Welcome,
           {" "}
-          {userInfo?.name}
+          {userInfo?.name || "Admin"}
 
         </p>
 

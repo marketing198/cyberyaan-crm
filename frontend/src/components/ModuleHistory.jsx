@@ -6,8 +6,9 @@ export default function ModuleHistory({
   setSearchTerm,
 }) {
 
-  const filteredStudents =
-    students.filter((student) => {
+  // Search Filter
+  const filteredStudents = students.filter(
+    (student) => {
 
       const query =
         searchTerm.toLowerCase();
@@ -18,17 +19,21 @@ export default function ModuleHistory({
           .includes(query) ||
 
         student.phone
-          ?.includes(query) ||
+          ?.toString()
+          .includes(query) ||
 
         student.enrollmentId
-          ?.toLowerCase()
+          ?.toString()
+          .toLowerCase()
           .includes(query)
       );
-    });
+    }
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6">
 
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 
         <h2 className="text-2xl font-bold">
@@ -37,7 +42,7 @@ export default function ModuleHistory({
 
         <input
           type="text"
-          placeholder="Search by Name, Phone or Enrollment ID"
+          placeholder="Search by Name, Phone Number or Enrollment ID"
           value={searchTerm}
           onChange={(e) =>
             setSearchTerm(e.target.value)
@@ -47,145 +52,164 @@ export default function ModuleHistory({
 
       </div>
 
+      {/* Students */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-        {filteredStudents.length > 0 ? (
+        {searchTerm.trim() ? (
 
-          filteredStudents.map((student) => (
+          filteredStudents.length > 0 ? (
 
-            <div
-              key={student._id}
-              className="border rounded-2xl bg-white p-5 shadow-sm"
-            >
+            filteredStudents.map((student) => (
 
-              <div className="flex items-center justify-between mb-4">
-
-                <div>
-
-                  <h3 className="text-lg font-bold">
-                    {student.name}
-                  </h3>
-
-                  <p className="text-sm text-gray-500">
-                    {student.course}
-                  </p>
-
-                </div>
-
-                <div className="text-right">
-
-                  <p className="text-sm text-gray-500">
-                    Completed
-                  </p>
-
-                  <p className="text-xl font-bold text-green-700">
-                    {student.moduleHistory?.length || 0}
-                  </p>
-
-                </div>
-
-              </div>
-
-              <button
-                onClick={() =>
-                  setSelectedStudent(
-                    selectedStudent ===
-                      student._id
-                      ? null
-                      : student._id
-                  )
-                }
-                className="w-full bg-black text-white py-2 rounded-xl hover:opacity-90 transition"
+              <div
+                key={student._id}
+                className="border rounded-2xl bg-white p-5 shadow-sm"
               >
-                {selectedStudent ===
-                student._id
-                  ? "Hide History"
-                  : "View Module History"}
-              </button>
 
-              {selectedStudent ===
-                student._id && (
+                <div className="flex items-center justify-between mb-4">
 
-                <div className="overflow-x-auto mt-5">
+                  <div>
 
-                  <table className="w-full border-collapse">
+                    <h3 className="text-lg font-bold">
+                      {student.name}
+                    </h3>
 
-                    <thead>
+                    <p className="text-sm text-gray-500">
+                      {student.course}
+                    </p>
 
-                      <tr className="bg-gray-100 text-left">
+                    <p className="text-sm text-gray-500 mt-1">
+                      ID: {student.enrollmentId}
+                    </p>
 
-                        <th className="p-3">
-                          Module Name
-                        </th>
+                    <p className="text-sm text-gray-500">
+                      Phone: {student.phone}
+                    </p>
 
-                        <th className="p-3">
-                          Completion Date
-                        </th>
+                  </div>
 
-                      </tr>
+                  <div className="text-right">
 
-                    </thead>
+                    <p className="text-sm text-gray-500">
+                      Completed
+                    </p>
 
-                    <tbody>
+                    <p className="text-xl font-bold text-green-700">
+                      {student.moduleHistory?.length || 0}
+                    </p>
 
-                      {student.moduleHistory
-                        ?.length > 0 ? (
+                  </div>
 
-                        student.moduleHistory.map(
-                          (
-                            moduleItem,
-                            index
-                          ) => (
+                </div>
 
-                            <tr
-                              key={index}
-                              className="border-b hover:bg-gray-50"
-                            >
+                <button
+                  onClick={() =>
+                    setSelectedStudent(
+                      selectedStudent === student._id
+                        ? null
+                        : student._id
+                    )
+                  }
+                  className="w-full bg-black text-white py-2 rounded-xl hover:opacity-90 transition"
+                >
+                  {selectedStudent === student._id
+                    ? "Hide History"
+                    : "View Module History"}
+                </button>
 
-                              <td className="p-3 font-medium">
-                                {moduleItem.module}
-                              </td>
+                {selectedStudent === student._id && (
 
-                              <td className="p-3 text-gray-600">
-                                {
-                                  moduleItem.completionDate
-                                }
-                              </td>
+                  <div className="overflow-x-auto mt-5">
 
-                            </tr>
-                          )
-                        )
+                    <table className="w-full border-collapse">
 
-                      ) : (
+                      <thead>
 
-                        <tr>
+                        <tr className="bg-gray-100 text-left">
 
-                          <td
-                            colSpan="2"
-                            className="p-4 text-center text-gray-500"
-                          >
-                            No Module History
-                          </td>
+                          <th className="p-3">
+                            Module Name
+                          </th>
+
+                          <th className="p-3">
+                            Completion Date
+                          </th>
 
                         </tr>
-                      )}
 
-                    </tbody>
+                      </thead>
 
-                  </table>
+                      <tbody>
 
-                </div>
-              )}
+                        {student.moduleHistory
+                          ?.length > 0 ? (
 
+                          student.moduleHistory.map(
+                            (
+                              moduleItem,
+                              index
+                            ) => (
+
+                              <tr
+                                key={index}
+                                className="border-b hover:bg-gray-50"
+                              >
+
+                                <td className="p-3 font-medium">
+
+                                  {typeof moduleItem === "string"
+                                    ? moduleItem
+                                    : moduleItem.module}
+
+                                </td>
+
+                                <td className="p-3 text-gray-600">
+
+                                  {typeof moduleItem === "string"
+                                    ? "-"
+                                    : moduleItem.completionDate}
+
+                                </td>
+
+                              </tr>
+                            )
+                          )
+
+                        ) : (
+
+                          <tr>
+
+                            <td
+                              colSpan="2"
+                              className="p-4 text-center text-gray-500"
+                            >
+                              No Module History
+                            </td>
+
+                          </tr>
+                        )}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+                )}
+
+              </div>
+            ))
+
+          ) : (
+
+            <div className="col-span-full text-center py-10 text-gray-500 text-lg">
+              No student found.
             </div>
-          ))
+          )
 
         ) : (
 
           <div className="col-span-full text-center py-10 text-gray-500 text-lg">
-
-            No student found.
-
+            Search student by Name, Phone Number or Enrollment ID.
           </div>
         )}
 

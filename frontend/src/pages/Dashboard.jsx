@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { COURSE_DATA } from "../data/courseData";
+
 
 import EmiSection from "../components/EmiSection";
 import ModuleProgress from "../components/ModuleProgress";
@@ -7,6 +9,7 @@ import ModuleHistory from "../components/ModuleHistory";
 import AddStudentModal from "../components/AddStudentModal";
 import EditStudentModal from "../components/EditStudentModal";
 import Navbar from "../components/Navbar";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import {
   getStudents,
   deleteStudent,
@@ -18,6 +21,9 @@ export default function Dashboard() {
     useState(null);
 
   const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [tableSearchTerm, setTableSearchTerm] =
     useState("");
 
   const [isOpen, setIsOpen] =
@@ -91,23 +97,25 @@ export default function Dashboard() {
     0
   );
 
-  const courseModules = [
-    "Networking",
-    "Linux",
-    "Python",
-    "Ethical Hacking",
-    "Web Pentesting",
-    "Network Pentesting",
-    "API Pentesting",
-    "Active Directory",
-    "SOC",
-    "Mobile Pentesting",
-  ];
+  const courseModules = COURSE_DATA["Diploma"] || [];
+
+
+  const filteredTableStudents = students.filter(student => {
+    if (!tableSearchTerm.trim()) return true;
+    const query = tableSearchTerm.toLowerCase();
+    return (
+      student.name?.toLowerCase().includes(query) ||
+      student.phone?.toString().includes(query) ||
+      student.enrollmentId?.toString().toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
 
       <div className="max-w-7xl mx-auto space-y-6">
+
+        <Navbar />
 
         <div>
 
@@ -175,30 +183,41 @@ export default function Dashboard() {
 
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-6 overflow-x-auto">
+        <div className="bg-white rounded-2xl shadow-md p-6">
 
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
 
             <h2 className="text-2xl font-bold">
               Student Records
             </h2>
 
-            <button
-              onClick={() => setIsOpen(true)}
-              className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-90 transition"
-            >
-              Add Student
-            </button>
+            <div className="flex gap-4 w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Search Name, Phone, or ID..."
+                value={tableSearchTerm}
+                onChange={(e) => setTableSearchTerm(e.target.value)}
+                className="border p-2 rounded-xl outline-none focus:ring-2 focus:ring-black w-full sm:w-64"
+              />
+              <button
+                onClick={() => setIsOpen(true)}
+                className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-90 transition whitespace-nowrap"
+              >
+                Add Student
+              </button>
+            </div>
 
           </div>
 
-          <table className="w-full border-collapse min-w-[1200px]">
+          <div className="overflow-auto max-h-[350px] rounded-xl border border-gray-100">
+            <table className="w-full border-collapse min-w-[1200px]">
 
-            <thead>
+              <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm">
 
-              <tr className="bg-gray-100 text-left">
+                <tr className="text-left">
 
                 <th className="p-3">Name</th>
+                <th className="p-3">Enrollment ID</th>
                 <th className="p-3">Phone</th>
                 <th className="p-3">Course</th>
                 <th className="p-3">Batch</th>
@@ -216,7 +235,7 @@ export default function Dashboard() {
 
             <tbody>
 
-              {students.map((student) => (
+              {filteredTableStudents.map((student) => (
 
                 <tr
                   key={student._id}
@@ -225,6 +244,10 @@ export default function Dashboard() {
 
                   <td className="p-3 font-medium">
                     {student.name}
+                  </td>
+
+                  <td className="p-3">
+                    {student.enrollmentId || "-"}
                   </td>
 
                   <td className="p-3">
@@ -279,18 +302,20 @@ export default function Dashboard() {
                       onClick={() =>
                         handleEdit(student)
                       }
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+                      className="text-blue-600 hover:text-blue-800 bg-blue-100 p-2 rounded-lg transition"
+                      title="Edit Student"
                     >
-                      Edit
+                      <FiEdit size={18} />
                     </button>
 
                     <button
                       onClick={() =>
                         handleDelete(student._id)
                       }
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
+                      className="text-red-600 hover:text-red-800 bg-red-100 p-2 rounded-lg transition"
+                      title="Delete Student"
                     >
-                      Delete
+                      <FiTrash2 size={18} />
                     </button>
 
                   </td>
@@ -301,7 +326,8 @@ export default function Dashboard() {
 
             </tbody>
 
-          </table>
+            </table>
+          </div>
 
         </div>
 
