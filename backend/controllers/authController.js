@@ -90,6 +90,18 @@ export const loginUser = async (
         email,
       });
 
+    console.log("Login Attempt:", { email, receivedPassword: password });
+    
+    if (user) {
+      console.log("User Found in DB:", { 
+        email: user.email, 
+        dbPassword: user.password,
+        match: user.password === password 
+      });
+    } else {
+      console.log("User NOT Found in DB for email:", email);
+    }
+
     // Check password
     if (
       user &&
