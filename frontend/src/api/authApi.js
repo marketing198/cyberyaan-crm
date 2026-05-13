@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_URL 
+const API = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api/auth`
-  : "http://localhost:5000/api/auth";
+  : "https://cyberyaan-backend-crm.onrender.com/api/auth";
 
 export const loginUser =
   async (userData) => {
